@@ -1,0 +1,81 @@
+<html>
+
+<head>
+<title>OL</title>
+<script src="https://openlayers.org/api/OpenLayers.js">
+</script>
+<style>
+#map {
+    width:800px;
+    height:800px;
+}
+</style>
+</head>
+
+<body>
+<div id="map"></div>
+
+
+<script>
+// your JS code 
+console.log("Hola, all!");
+alert("Hello JS World!");
+
+// my data is a label/ID for what we store, which is the object stored in variable d, 
+// whose value is {"k1":[{"a":5, "b":-6}]}, which consists of a key called k1 
+// with an array as its value: [{"a":5, "b":-6}]
+var d = {"k1":[{"a":34.0307025, "b":-118.2823554}], "k2":[{"a":34.0217897, "b":-118.2828223}], "k3":[{"a":34.0200564, "b":-118.2833780}], "k4":[{"a":34.0196596, "b":-118.2822375}], 
+"k5":[{"a":34.0207397, "b":-118.2854038}], "k6":[{"a":34.0188396, "b":-118.2854661}], "k7":[{"a":34.0187018, "b":-118.2842496}], "k8":[{"a":34.0206602, "b":-118.2864103}], 
+"k9":[{"a":34.0207644, "b":-118.2889116}], "k10":[{"a":34.0201376, "b":-118.2906903}], "k11":[{"a":34.0220234, "b":-118.2888158}], "k12":[{"a":34.0227746, "b":-118.2878004}], "k13":[{"a":34.0245914, "b":-118.2881172}]};
+localStorage.setItem("myData",JSON.stringify(d));
+// you'd need to modify the above, to store all your points
+
+
+//next [presumably after closing the browser, and reloading our html]
+// we can fetch the stored data, just by supplying its key:
+var dataStored = JSON.parse(localStorage.getItem("myData"));
+// verify that we fetched our data correctly
+console.log(dataStored); 
+// we can iterate through our array [of points], like so:
+var a = dataStored.k1; // a will contain our array
+for(var indx in a) { // indx is 0,1,2...
+  console.log(a[indx]); // this could be a single point
+}
+
+// here's how to plot points on a map, using OpenLayers:
+// [this is code I mildly modified, from an existing source]
+function initMap() {
+        map = new OpenLayers.Map('map');
+        basemap = new OpenLayers.Layer.OSM("Simple OSM Map");
+        map.addLayer(basemap);
+        markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+}// initMap()
+
+function addMarker(latitude, longitude) {
+        var lonLat = new OpenLayers.LonLat(longitude, latitude)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+                map.getProjectionObject() // to Spherical Mercator Projection
+        );
+        var point = new OpenLayers.Marker(lonLat);
+        markers.addMarker(point);
+        map.setCenter(lonLat, 8); // second arg is zoom level
+        //console.log(latitude + ", " + longitude);
+}// addMarker()
+
+
+// load and setup map layers
+initMap();
+
+// here's how to plot just ONE [lat,long] on the map! 
+for(let i in d)
+{
+    addMarker(d[i][0]["a"],d[i][0]["b"]);
+}
+
+</script>
+
+</body>
+
+</html>
